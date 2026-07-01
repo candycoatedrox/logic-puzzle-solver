@@ -1,1 +1,1 @@
-# logic-puzzle
+# logic-puzzle-solver

@@ -1,0 +1,20 @@
+Guide to Clue classes:
+- SimpleClue: X is/is not Y.
+    - mark the intersection of X/Y true/false, depending. INSTANT COMPLETE
+- NeitherClue: Neither X nor Y is Z.
+    - mark the intersections of X/Y, Y/Z, X/Z false. INSTANT COMPLETE
+- AllDifferentClue: X, Y, and Z are all different.
+    - mark the intersections of X/Y, Y/Z, X/Z, ... etc. false. INSTANT COMPLETE
+- GreaterLessThanClue: X is somewhat greater/less than Y.
+    - mark the intersection of X/Y false
+    - (if greater; inverse for less) mark X false for all numbers less than/equal to lowest possible value of Y; mark Y false for all numbers greater than/equal to highest possible value of X
+- SpecificGreaterLessThanClue: X is N steps greater/less than Y.
+    - mark the intersection of X/Y false
+    - (if greater; inverse for less) 
+- EitherClue: X is either Y or Z.
+    - mark the intersection of Y/Z false
+- BetweenClue: Between X and Y, one is Z and one is W.
+    - mark the intersections of X/Y, Z/W false
+- ???Clue: 
+- ???Clue: 
+- ???Clue: 
