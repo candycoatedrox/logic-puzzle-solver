@@ -1,20 +1,25 @@
 Guide to Clue classes:
 - SimpleClue: X is/is not Y.
-    - mark the intersection of X/Y true/false, depending. INSTANT COMPLETE
+    - mark the intersection of X/Y true/false, depending; INSTANT COMPLETE
 - NeitherClue: Neither X nor Y is Z.
-    - mark the intersections of X/Y, Y/Z, X/Z false. INSTANT COMPLETE
+    - mark the intersections of X/Y, Y/Z, X/Z false; INSTANT COMPLETE
 - AllDifferentClue: X, Y, and Z are all different.
-    - mark the intersections of X/Y, Y/Z, X/Z, ... etc. false. INSTANT COMPLETE
+    - mark the intersections of X/Y, Y/Z, X/Z, ... etc. false; INSTANT COMPLETE
 - GreaterLessThanClue: X is somewhat greater/less than Y.
     - mark the intersection of X/Y false
-    - (if greater; inverse for less) mark X false for all numbers less than/equal to lowest possible value of Y; mark Y false for all numbers greater than/equal to highest possible value of X
+    - IF GREATER, INVERSE FOR LESS: mark X false for all numbers less than/equal to lowest possible value of Y; mark Y false for all numbers greater than/equal to highest possible value of X
 - SpecificGreaterLessThanClue: X is N steps greater/less than Y.
     - mark the intersection of X/Y false
-    - (if greater; inverse for less) 
+    - IF GREATER, INVERSE FOR LESS:  
 - EitherClue: X is either Y or Z.
-    - mark the intersection of Y/Z false
-- BetweenClue: Between X and Y, one is Z and one is W.
-    - mark the intersections of X/Y, Z/W false
-- ???Clue: 
+    - IF Y AND Z SAME CATEGORY: mark intersections of X and all values in category except Y+Z false; INSTANT COMPLETE
+    - IF Y AND Z DIFFERENT CATEGORIES: mark the intersection of Y/Z false
+- BetweenClue: Of X and Y, one is A and the other is B.
+    - IF BOTH X/Y, A/B SAME CATEGORIES: mark intersections of X+Y and all values in category except A+B false; INSTANT COMPLETE
+    - IF X AND Y SAME CATEGORY: mark intersection of X/Y false; mark intersections of X+Y and all values in category except A+B false
+    - IF A AND B SAME CATEGORY: inverse of above
+    - IF BOTH DIFFERENT CATEGORIES: mark the intersections of X/Y, A/B false
+- AllClue: The N options were X, Y, Z, W, and V.
+    - mark all intersections false; INSTANT COMPLETE (? or can be used to say "if not XYZW, must be V"? is that useful?)
 - ???Clue: 
 - ???Clue: 

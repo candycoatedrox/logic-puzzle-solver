@@ -1,14 +1,14 @@
-public class AllDifferentClue extends Clue {
+public class AllClue extends Clue {
 
-    // "X, Y, and Z are all different" clues
-    
+    // "The N options were X, Y, Z, W, and V" clues
+
     private final int[][] values;
 
     // --- CONSTRUCTORS ---
 
-    public AllDifferentClue(int[][] values, String[] clueText) {
-        if (values.length < 3) {
-            throw new IllegalArgumentException("Must provide at least 3 values");
+    public AllClue(int[][] values, String[] clueText) {
+        if (values.length < 4) {
+            throw new IllegalArgumentException("Must provide at least 4 values");
         } else if (!Utils.areValidValueReferences(values)) {
             throw new IllegalArgumentException("Value references must be pairs");
         } else if (values.length > clueText.length) {
@@ -17,21 +17,21 @@ public class AllDifferentClue extends Clue {
 
         this.values = values;
 
-        String display = clueText[0];
+        String display = "The " + Utils.numToString(values.length) + " values are " + clueText[0];
         for (int i = 1; i < values.length; i++) {
             display += ", ";
             if (i == values.length - 1) display += "and ";
             display += clueText[i];
         }
-        display += " are all different.";
+        display += ".";
         setDisplayText(display);
     }
 
-    public AllDifferentClue(String overrideDisplayText, int[][] values) {
+    public AllClue(String overrideDisplayText, int[][] values) {
         super(overrideDisplayText);
 
-        if (values.length < 3) {
-            throw new IllegalArgumentException("Must provide at least 3 values");
+        if (values.length < 4) {
+            throw new IllegalArgumentException("Must provide at least 4 values");
         } else if (!Utils.areValidValueReferences(values)) {
             throw new IllegalArgumentException("Value references must be pairs");
         }
@@ -56,5 +56,5 @@ public class AllDifferentClue extends Clue {
     public int getValue(int i) {
         return values[i][1];
     }
-
+    
 }
