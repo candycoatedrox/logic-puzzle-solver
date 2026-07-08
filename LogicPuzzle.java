@@ -60,6 +60,22 @@ public class LogicPuzzle {
     public int nClues() {
         return clues.size();
     }
+
+    public boolean autoResolveEnabled() {
+        return grid.autoResolveEnabled();
+    }
+
+    public int autoResolveLevel() {
+        return grid.autoResolveLevel();
+    }
+
+    public void setAutoResolve(int level) {
+        grid.setAutoResolve(level);
+    }
+
+    public void setAutoResolve(boolean value) {
+        grid.setAutoResolve(value);
+    }
     
     // --- MANAGE CLUES ---
 

@@ -54,6 +54,15 @@ public class LogicPuzzleGrid {
         return autoResolve;
     }
 
+    public void setAutoResolve(int level) {
+        if (level >= 0 && level <= 2) autoResolve = level;
+    }
+
+    public void setAutoResolve(boolean value) {
+        if (value) autoResolve = 1;
+        else autoResolve = 0;
+    }
+
     public int[][][][] getFullGrid() {
         return grid;
     }
