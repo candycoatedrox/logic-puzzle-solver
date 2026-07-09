@@ -43,7 +43,7 @@ public class ClueList extends ArrayList<Clue> {
     }
 
     public String getClueDisplayText(int i) {
-        return this.get(i).getDisplayText();
+        return this.get(i).toString();
     }
 
     public void overrideClueDisplayText(int i, String display) {
@@ -85,7 +85,7 @@ public class ClueList extends ArrayList<Clue> {
         String s = "";
         for (int i = 0; i < clues.size(); i++) {
             if (i != 0) s += "\n";
-            s += (i+1) + ".) " + clues.get(i).getDisplayText();
+            s += (i+1) + ".) " + clues.get(i);
         }
 
         return s;
@@ -96,7 +96,7 @@ public class ClueList extends ArrayList<Clue> {
         String s = "";
         for (int i = 0; i < clues.size(); i++) {
             if (i != 0) s += "\n";
-            s += (i+1) + ".) " + clues.get(i).getDisplayText();
+            s += (i+1) + ".) " + clues.get(i);
         }
 
         return s;
@@ -114,14 +114,14 @@ public class ClueList extends ArrayList<Clue> {
         if (!inactiveClues.isEmpty()) {
             s += "--- Inactive Clues ---";
             for (int i = 0; i < inactiveClues.size(); i++) {
-                s += "\n" + (i+1) + ".) " + inactiveClues.get(i).getDisplayText();
+                s += "\n" + (i+1) + ".) " + inactiveClues.get(i);
             }
         }
         if (!activeClues.isEmpty()) {
             if (!inactiveClues.isEmpty()) s += "\n\n";
             s += "--- Active Clues ---";
             for (int i = 0; i < activeClues.size(); i++) {
-                s += "\n" + (i+1) + ".) " + activeClues.get(i).getDisplayText();
+                s += "\n" + (i+1) + ".) " + activeClues.get(i);
             }
         }
 

@@ -16,7 +16,8 @@ public abstract class Clue {
 
     // --- GETTERS & SETTERS ---
 
-    public String getDisplayText() {
+    @Override
+    public String toString() {
         return displayText;
     }
 

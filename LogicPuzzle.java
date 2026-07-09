@@ -10,6 +10,7 @@ public class LogicPuzzle {
 
     // Grid & clues
     protected final LogicPuzzleGrid grid;
+    protected final GridFrame frame;
     protected final ClueList clues;
 
     // --- CONSTRUCTOR ---
@@ -27,6 +28,7 @@ public class LogicPuzzle {
         }
 
         grid = new LogicPuzzleGrid(categoryCount, valueCount);
+        frame = grid.getFrame();
         clues = new ClueList();
     }
 
@@ -95,6 +97,20 @@ public class LogicPuzzle {
 
 
         return changesMade;
+    }
+
+    // --- MISC ---
+
+    @Override
+    public String toString() {
+        String s = "";
+
+        // TODO
+
+        s = clues.toString();
+
+
+        return s;
     }
 
 }

@@ -12,6 +12,9 @@ public class LogicPuzzleGrid {
     protected int autoResolve = 1; // TODO: if true, resolveGrid() every time player changes something; include "resolve" command/button as well
     // 0 = no auto-resolve; 1 = sync values linked to true marks in diff. categories; 2 = all auto-resolve
 
+    protected final GridFrame frame;
+    protected int[] cursor; // indices of user's currently selected square
+
     protected final int categoryCount;
     protected final int valueCount;
 
@@ -26,6 +29,7 @@ public class LogicPuzzleGrid {
     // --- CONSTRUCTOR ---
 
     public LogicPuzzleGrid(int categoryCount, int valueCount) {
+        frame = new GridFrame(this);
         this.categoryCount = categoryCount;
         this.valueCount = valueCount;
 
@@ -63,6 +67,10 @@ public class LogicPuzzleGrid {
         else autoResolve = 0;
     }
 
+    public GridFrame getFrame() {
+        return frame;
+    }
+
     public int[][][][] getFullGrid() {
         return grid;
     }
@@ -90,6 +98,7 @@ public class LogicPuzzleGrid {
     /* Get subgrid between categories catA and catB */
     public int[][] getSubgrid(int catA, int catB) {
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
         
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
@@ -131,6 +140,8 @@ public class LogicPuzzleGrid {
 
     public int getMarkedValue(int catA, int valA, int catB, int valB) {
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
+        if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
@@ -139,12 +150,16 @@ public class LogicPuzzleGrid {
         return subgrid[valA][valB];
     }
 
+    // --- MARKING ---
+
     private void setMarkedValueDirectly(int mark, int catA, int valA, int catB, int valB) {
         grid[catA][catB - catA - 1][valA][valB] = mark;
     }
 
     public boolean markValue(int mark, int catA, int valA, int catB, int valB) {
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
+        if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
 
         if (mark < -1) mark = -1;
         else if (mark > 1) mark = 1;
@@ -176,6 +191,8 @@ public class LogicPuzzleGrid {
 
     private boolean setTrue(int catA, int valA, int catB, int valB) {
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
+        if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
@@ -200,6 +217,8 @@ public class LogicPuzzleGrid {
     private boolean removeTrue(int newMark, int catA, int valA, int catB, int valB) {
         if (newMark == 1) return false;
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
+        if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
@@ -217,7 +236,58 @@ public class LogicPuzzleGrid {
         return true;
     }
 
-    // --- RESOLVE SUBGRIDS, ROWS, COLUMNS ---
+    // --- CURSOR ---
+
+    public int[] getCursor() {
+        return cursor;
+    }
+
+    public void setCursor() {
+        // TODO
+
+
+    }
+
+    public void resetCursor() {
+        // TODO
+
+
+
+    }
+
+    public boolean moveCursorLeft() {
+        // TODO: return true if able to move, false if not
+
+
+
+        return true;
+    }
+
+    public boolean moveCursorRight() {
+        // TODO: return true if able to move, false if not
+
+
+
+        return true;
+    }
+
+    public boolean moveCursorUp() {
+        // TODO: return true if able to move, false if not
+
+
+
+        return true;
+    }
+
+    public boolean moveCursorDown() {
+        // TODO: return true if able to move, false if not
+
+
+
+        return true;
+    }
+
+    // --- RESOLVE GRID ---
 
     public boolean resolveGrid() {
         // returns true if anything changed, false otherwise
@@ -274,6 +344,7 @@ public class LogicPuzzleGrid {
     public boolean resolveSubgrid(int catA, int catB) {
         // returns true if anything changed, false otherwise
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
         
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
@@ -316,6 +387,8 @@ public class LogicPuzzleGrid {
     public boolean resolveSubgridRow(int catA, int catB, int r) {
         // returns true if anything changed, false otherwise
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
+        if (!isValidValue(r)) throw new IndexOutOfBoundsException("Invalid row");
 
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
@@ -345,6 +418,8 @@ public class LogicPuzzleGrid {
     public boolean resolveSubgridColumn(int catA, int catB, int c) {
         // returns true if anything changed, false otherwise
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
+        if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
+        if (!isValidValue(c)) throw new IndexOutOfBoundsException("Invalid column");
 
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
@@ -373,6 +448,26 @@ public class LogicPuzzleGrid {
         for (int i = 0; i < valueCount; i++) subgrid[i][c] = column[i];
 
         return changesMade;
+    }
+
+    // --- MISC ---
+
+    private boolean isValidCategory(int cat) {
+        return cat >= 0 && cat < categoryCount;
+    }
+
+    private boolean isValidValue(int val) {
+        return val >= 0 && val < valueCount;
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+
+        // TODO
+
+
+        return s;
     }
 
 }
