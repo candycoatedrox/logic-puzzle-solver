@@ -18,13 +18,15 @@ public class LogicPuzzleGrid {
     protected final int categoryCount;
     protected final int valueCount;
 
-    protected final int[][][][] grid;
-    // accessed via category and value indices
-    // access an individual square with:
-    // grid [category A] [category B] [value row] [value column]
-    // A should ALWAYS be less than B; will be automatically converted
+    protected final int[][] grid;
 
-    private final int[][] subgridIndices;
+    // for a CxV puzzle:
+    // V*(C-1) total rows
+    // each row has V*(C-(r/V)-1) columns (r/v = subgrid)
+
+    // TODO: do i just cut my fucking losses and reprogram this entire thing to work with a basic int[][] array. fml
+
+    private final int[][] subgridCategories;
 
     // --- CONSTRUCTOR ---
 
@@ -34,15 +36,20 @@ public class LogicPuzzleGrid {
         this.valueCount = valueCount;
 
         int n = categoryCount - 1;
-        grid = new int[n][][][];
-        subgridIndices = new int[Utils.additionFactorial(n)][2];
+        grid = new int[valueCount*n][];
 
+        int subgrid;
+        for (int i = 0; i < grid.length; i++) {
+            subgrid = i / valueCount;
+            grid[i] = new int[valueCount*(n - subgrid)];
+        }
+
+        subgridCategories = new int[Utils.additionFactorial(n)][2];
         int indexN = 0;
         for (int i = 0; i < n; i++) {
-            grid[i] = new int[n-i][valueCount][valueCount];
             for (int j = 0; j < n-i; j++) {
-                subgridIndices[indexN][0] = i;
-                subgridIndices[indexN][1] = j;
+                subgridCategories[indexN][0] = i;
+                subgridCategories[indexN][1] = j;
                 indexN += 1;
             }
         }
@@ -71,7 +78,7 @@ public class LogicPuzzleGrid {
         return frame;
     }
 
-    public int[][][][] getFullGrid() {
+    public int[][] getFullGrid() {
         return grid;
     }
 
@@ -107,11 +114,44 @@ public class LogicPuzzleGrid {
     }
 
     private int[][] getSubgridDirectly(int catA, int catB) {
-        return grid[catA][catB - catA - 1];
+        int[] startIndices = getSubgridStartIndices(catA, catB);
+        int[][] subgrid = new int[valueCount][valueCount];
+        for (int i = 0; i < valueCount; i++) {
+            for (int j = 0; j < valueCount; j++) {
+                subgrid[i][j] = grid[startIndices[0] + i][startIndices[1] + j];
+            }
+        }
+        return subgrid;
+    }
+
+    public int[][] getSubgridOfSquare(int row, int col) {
+        int[] startIndices = getSubgridStartIndicesOfSquare(row, col);
+        int[][] subgrid = new int[valueCount][valueCount];
+        for (int i = 0; i < valueCount; i++) {
+            for (int j = 0; j < valueCount; j++) {
+                subgrid[i][j] = grid[startIndices[0] + i][startIndices[1] + j];
+            }
+        }
+        return subgrid;
+    }
+
+    private int[] getSubgridStartIndices(int catA, int catB) {
+        int[] indices = {catA * valueCount, (catB - catA - 1) * valueCount};
+        return indices;
+    }
+
+    private int[] getSubgridStartIndicesOfSquare(int row, int col) {
+        int[] indices = {row - (row % valueCount), col - (col % valueCount)};
+        return indices;
     }
     
     private void setSubgridDirectly(int catA, int catB, int[][] subgrid) {
-        grid[catA][catB - catA - 1] = subgrid;
+        int[] startIndices = getSubgridStartIndices(catA, catB);
+        for (int i = 0; i < valueCount; i++) {
+            for (int j = 0; j < valueCount; j++) {
+                grid[startIndices[0] + i][startIndices[1] + j] = subgrid[i][j];
+            }
+        }
     }
 
     private int[] getSubgridRow(int catA, int catB, int row) {
@@ -138,6 +178,20 @@ public class LogicPuzzleGrid {
         }
     }
 
+    private int[] getGridIndices(int catA, int valA, int catB, int valB) {
+        int[] subgridCategories = getSubgridStartIndices(catA, catB);
+        int[] indices = {subgridCategories[0] + valA, subgridCategories[1] + valB};
+        return indices;
+    }
+
+    private int[] getCategoriesAndValues(int row, int col) {
+        int subgridRow = row / valueCount; int subgridCol = col / valueCount;
+        int catA = subgridRow; int catB = subgridCol + subgridRow + 1;
+        int valA = row % valueCount; int valB = col % valueCount;
+        int[] output = {catA,catB,valA,valB};
+        return output;
+    }
+
     public int getMarkedValue(int catA, int valA, int catB, int valB) {
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
         if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
@@ -145,16 +199,17 @@ public class LogicPuzzleGrid {
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
-        int[][] subgrid = getSubgridDirectly(catA, catB);
+        int[] gridIndices = getGridIndices(catA, valA, catB, valB);
 
-        return subgrid[valA][valB];
+        return grid[gridIndices[0]][gridIndices[1]];
+    }
+
+    private int getMarkedValueDirectly(int catA, int valA, int catB, int valB) {
+        int[] gridIndices = getGridIndices(catA, valA, catB, valB);
+        return grid[gridIndices[0]][gridIndices[1]];
     }
 
     // --- MARKING ---
-
-    private void setMarkedValueDirectly(int mark, int catA, int valA, int catB, int valB) {
-        grid[catA][catB - catA - 1][valA][valB] = mark;
-    }
 
     public boolean markValue(int mark, int catA, int valA, int catB, int valB) {
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
@@ -166,7 +221,6 @@ public class LogicPuzzleGrid {
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
-        int[][] subgrid = getSubgridDirectly(catA, catB);
 
         // CHECK BEFORE MARKING
         // if current value = -2 or -3 (forced false): DO NOT SET
@@ -174,19 +228,24 @@ public class LogicPuzzleGrid {
             // if setting to 1, double-check there is no other true in row or column
         // if current value = 1 (true): 
             // change -3 to -1 and -2 to 0 within subgrid row and column
-        int prevValue = subgrid[valA][valB];
+        int prevValue = getMarkedValueDirectly(catA, valA, catB, valB);
         switch (prevValue) {
             case 0:
             case -1:
                 if (mark == 1) {
                     return setTrue(catA, valA, catB, valB);
                 } else {
-                    subgrid[valA][valB] = mark;
+                    setMarkedValueDirectly(mark, catA, valA, catB, valB);
                     return true;
                 }
             case 1: return removeTrue(mark, catA, valA, catB, valB);
             default: return false;
         }
+    }
+
+    private void setMarkedValueDirectly(int mark, int catA, int valA, int catB, int valB) {
+        int[] gridIndices = getGridIndices(catA, valA, catB, valB);
+        grid[gridIndices[0]][gridIndices[1]] = mark;
     }
 
     private boolean setTrue(int catA, int valA, int catB, int valB) {
@@ -196,6 +255,10 @@ public class LogicPuzzleGrid {
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
+
+        // TODO: update to optimize for 2D array, using subgrid start indices to manage grid directly, instead of managing subgrid in isolation then setting it
+
+
         int[][] subgrid = getSubgridDirectly(catA, catB);
 
         // check for existing true values
@@ -214,6 +277,15 @@ public class LogicPuzzleGrid {
         return true;
     }
 
+    private boolean setTrue(int mark, int row, int col) {
+        // TODO after other setTrue is done
+
+
+
+
+        return true;
+    }
+
     private boolean removeTrue(int newMark, int catA, int valA, int catB, int valB) {
         if (newMark == 1) return false;
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
@@ -222,6 +294,10 @@ public class LogicPuzzleGrid {
 
         int[] indices = getTrueIndices(catA, catB, valA, valB);
         catA = indices[0]; catB = indices[1]; valA = indices[2]; valB = indices[3];
+
+        // TODO: update to optimize for 2D array, using subgrid start indices to manage grid directly, instead of managing subgrid in isolation then setting it
+
+        
         int[][] subgrid = getSubgridDirectly(catA, catB);
 
         subgrid[valA][valB] = newMark;
@@ -233,6 +309,16 @@ public class LogicPuzzleGrid {
         }
 
         setSubgridDirectly(catA, catB, subgrid);
+        return true;
+    }
+
+    private boolean removeTrue(int newMark, int row, int col) {
+        if (newMark == 1) return false;
+        // TODO after other removeTrue is done
+
+
+
+
         return true;
     }
 
@@ -297,7 +383,7 @@ public class LogicPuzzleGrid {
         while (changedThisLoop) {
             changedThisLoop = false;
 
-            for (int[] indices : subgridIndices) {
+            for (int[] indices : subgridCategories) {
                 if (resolveSubgrid(indices)) changedThisLoop = true;
             }
 
@@ -348,11 +434,15 @@ public class LogicPuzzleGrid {
         
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
+
+        // TODO: update to optimize for 2D array, using subgrid start indices to manage grid directly, instead of managing subgrid in isolation then setting it
+
+        
         int[][] subgrid = getSubgridDirectly(catA, catB);
 
         // TODO
         // align with marked true values for other categories
-        // if 2 values have only same 2 possibilities left, mark those false for other categories, etc
+        // if 2 values have only same 2 possibilities left, mark those false for other values, etc
         // etc
 
         boolean changesMade = false;
@@ -392,6 +482,10 @@ public class LogicPuzzleGrid {
 
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
+
+        // TODO: update to optimize for 2D array, using subgrid start indices to manage grid directly, instead of managing subgrid in isolation then setting it
+
+        
         int[][] subgrid = getSubgridDirectly(catA, catB);
         int[] row = getSubgridRow(catA, catB, r);
 
@@ -423,6 +517,10 @@ public class LogicPuzzleGrid {
 
         int[] indices = getTrueIndices(catA, catB);
         catA = indices[0]; catB = indices[1];
+
+        // TODO: update to optimize for 2D array, using subgrid start indices to manage grid directly, instead of managing subgrid in isolation then setting it
+
+        
         int[][] subgrid = getSubgridDirectly(catA, catB);
         int[] column = getSubgridRow(catA, catB, c);
 
