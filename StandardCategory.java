@@ -18,15 +18,15 @@ public class StandardCategory extends Category {
         this.clueTemplate = clueTemplate;
 
         for (int i = 0; i < values.length; i++) {
-            clueValues[i] = clueTemplate.replace("$VAL", values[i]);
+            clueValues[i] = clueTemplate.replace("{VAL}", values[i]);
         }
     }
 
     public StandardCategory(String name, String... values) {
-        this(name, "$VAL", values);
+        this(name, "{VAL}", values);
     }
 
-    // --- GETTERS & SETTERS ---
+    // --- SET CATEGORY ---
 
     public void setCategory(String clueTemplate, String... values) {
         int n = getCount();
@@ -34,9 +34,12 @@ public class StandardCategory extends Category {
 
         this.clueTemplate = clueTemplate;
         this.values = Arrays.copyOf(values, n);
-        setClueValues();
+        updateClueValues();
     }
 
+    // --- GETTERS & SETTERS ---
+
+    @Override
     public int getCount() {
         return values.length;
     }
@@ -50,7 +53,7 @@ public class StandardCategory extends Category {
         if (values.length > n) throw new IllegalArgumentException("Not enough values provided");
 
         this.values = Arrays.copyOf(values, n);
-        setClueValues();
+        updateClueValues();
     }
 
     public String getValue(int i) {
@@ -58,10 +61,22 @@ public class StandardCategory extends Category {
     }
 
     @Override
-    public void setClueValues() {
-        for (int i = 0; i < getCount(); i++) {
-            clueValues[i] = clueTemplate.replace("$VAL", values[i]);
-        }
+    public String[] getDisplayValues() {
+        return values;
+    }
+
+    @Override
+    public String getDisplayValue(int i) {
+        return values[i];
+    }
+
+    @Override
+    protected void updateDisplayValue(int i) {
+    }
+
+    @Override
+    protected void updateClueValue(int i) {
+        clueValues[i] = clueTemplate.replace("{VAL}", String.valueOf(values[i]));
     }
 
 }

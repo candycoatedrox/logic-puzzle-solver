@@ -1,4 +1,4 @@
-public class Driver {
+public class PuzzleDriver {
 
     private static LogicPuzzle puzzle;
 

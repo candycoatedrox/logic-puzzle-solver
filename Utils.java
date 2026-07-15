@@ -77,11 +77,37 @@ public class Utils {
 
     public static String numWithCommas(double n) {
         String integer = numWithCommas((int)n);
-        if (n % 1 == 0) return integer; // double is functionally an integer
+        if (isInteger(n)) return integer;
 
         String s = String.valueOf(n);
         String decimal = s.split("\\.")[1];
         return integer + "." + decimal;
+    }
+
+    public static String numAsPrice(double n, boolean forceWhole) {
+        if (forceWhole || n >= 100 || n <= -100) {
+            return "$" + numWithCommas(n);
+        } else {
+            String price = "$" + numWithCommas((int)n);
+            if (isInteger(n)) return price + ".00";
+
+            String s = String.valueOf(n);
+            String decimal = s.split("\\.")[1];
+            decimal += "00";
+            return price + "." + decimal.substring(0,3);
+        }
+    }
+
+    public static String numAsPrice(double n) {
+        return numAsPrice(n, false);
+    }
+
+    public static String numAsPrice(int n, boolean forceWhole) {
+        return numAsPrice((double)n, forceWhole);
+    }
+
+    public static String numAsPrice(int n) {
+        return numAsPrice((double)n, false);
     }
     
     public static String toSentenceCase(String s) {
@@ -140,6 +166,55 @@ public class Utils {
         }
     }
 
+    public static String numToOrdinalString(int n) {
+        switch (n) {
+            case 1: return "first";
+            case 2: return "second";
+            case 3: return "third";
+            case 5: return "fifth";
+            case 9: return "ninth";
+            case 12: return "twelfth";
+            case 20: return "twentieth";
+
+            case 30: return "thirtieth";
+            case 40: return "fourtieth";
+            case 50: return "fiftieth";
+            case 60: return "sixtieth";
+            case 70: return "seventieth";
+            case 80: return "eightieth";
+            case 90: return "ninetieth";
+
+            case 4:
+            case 6:
+            case 7:
+            case 8:
+            case 10:
+            case 11:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 100: return numToString(n) + "th";
+
+            default:
+                String s = String.valueOf(n);
+                int finalDigit = n % 10;
+                switch (finalDigit) {
+                    case 1: return s + "st";
+                    case 2: return s + "nd";
+                    case 3: return s + "rd";
+                    default: return s + "th";
+                }
+        }
+    }
+
+    public static String numToOrdinalString(double n) {
+        return numToOrdinalString((int)n);
+    }
+
     public static boolean isPunctuation(char c) {
         switch (c) {
             case ',':
@@ -163,6 +238,10 @@ public class Utils {
     }
 
     // --- MISC ---
+
+    public static boolean isInteger(double d) {
+        return d % 1 == 0;
+    }
 
     public static int additionFactorial(int n) {
         if (n <= 1) {
