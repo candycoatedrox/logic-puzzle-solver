@@ -44,4 +44,8 @@ public abstract class Clue {
         return isActive;
     }
 
+    // --- RESOLVE ---
+
+    public abstract boolean resolve(LogicPuzzleGrid grid);
+
 }

@@ -134,5 +134,17 @@ public class BetweenClue extends Clue {
     public int getValueY() {
         return valueY[1];
     }
+
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
+    }
     
 }

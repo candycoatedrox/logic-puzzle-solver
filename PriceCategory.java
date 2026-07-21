@@ -2,6 +2,11 @@ public class PriceCategory extends NumericalCategory {
 
     // --- CONSTRUCTORS ---
 
+    /* Main constructor; use setCategory() to set values and clue template later */
+    public PriceCategory(String name, int count) {
+        super(name, count);
+    }
+
     public PriceCategory(String name, int count, double startValue, double step, String displayNoun, String clueTemplate) {
         super(name, count, startValue, step, displayNoun, clueTemplate);
         if (startValue <= 0 || startValue + step*5 <= 0) throw new IllegalArgumentException("All values in a price category must be positive");

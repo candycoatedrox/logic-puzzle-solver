@@ -24,6 +24,7 @@ public class SpecificGreaterLessThanClue extends Clue {
         this.valueA = valueA;
         this.valueB = valueB;
 
+        // TODO: fix clue template
         if (steps > 0) {
             setDisplayText(clueTextA + " is greater than " + clueTextB + ".");
         } else {
@@ -287,6 +288,18 @@ public class SpecificGreaterLessThanClue extends Clue {
 
     public int getValueB() {
         return valueB[1];
+    }
+
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
     }
     
 }

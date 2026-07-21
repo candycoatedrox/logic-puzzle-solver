@@ -42,6 +42,8 @@ public class ClueList extends ArrayList<Clue> {
         return inactive;
     }
 
+    // --- CLUE MANAGEMENT ---
+
     public String getClueDisplayText(int i) {
         return this.get(i).toString();
     }
@@ -76,6 +78,10 @@ public class ClueList extends ArrayList<Clue> {
 
     public boolean toggleClueActive(int i) {
         return this.get(i).toggleActive();
+    }
+
+    public boolean resolveClue(int i, LogicPuzzleGrid grid) {
+        return this.get(i).resolve(grid);
     }
 
     // --- STRING REPRESENTATION ---

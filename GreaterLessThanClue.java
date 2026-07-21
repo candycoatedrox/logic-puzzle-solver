@@ -111,5 +111,17 @@ public class GreaterLessThanClue extends Clue {
     public int getValueB() {
         return valueB[1];
     }
+
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
+    }
     
 }

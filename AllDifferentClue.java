@@ -57,4 +57,16 @@ public class AllDifferentClue extends Clue {
         return values[i][1];
     }
 
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
+    }
+
 }

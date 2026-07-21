@@ -168,7 +168,6 @@ public class NumericalCategory extends Category {
             updateDisplayValue(i);
             val += step;
         }
-        
     }
 
     public void setValues(int startValue, double step) {
@@ -215,12 +214,13 @@ public class NumericalCategory extends Category {
         if (isPrice()) return 1;
         else if (isTime()) return 2;
         else if (isDate()) return 3;
-        else if (isOrdinal()) return 4;
+        else if (isMonth()) return 4;
+        else if (isOrdinal()) return 5;
         else return 0;
     }
 
     public boolean isStandard() {
-        return !isPrice() && !isTime() && !isDate() && !isOrdinal();
+        return getDisplayType() == 0;
     }
 
     public boolean isPrice() {
@@ -233,6 +233,10 @@ public class NumericalCategory extends Category {
 
     public boolean isDate() {
         return this instanceof DateCategory;
+    }
+
+    public boolean isMonth() {
+        return this instanceof MonthCategory;
     }
 
     public boolean isOrdinal() {

@@ -1,18 +1,19 @@
-public class OrdinalCategory extends NumericalCategory {
+public class MonthCategory extends NumericalCategory {
 
     // --- CONSTRUCTORS ---
 
-    public OrdinalCategory(String name, int count, int startValue, int step) {
+    /* Main constructor; use setCategory() to set values later */
+    public MonthCategory(String name, int count) {
+        super(name, count);
+    }
+
+    public MonthCategory(String name, int count, int startValue, int step) {
         super(name, count, startValue, step);
-        if (startValue <= 0 || startValue + step*5 <= 0) throw new IllegalArgumentException("All values in an ordinal category must be positive");
+        if (startValue <= 0 || startValue + step*5 <= 0) throw new IllegalArgumentException("All values in a month category must be positive");
     }
 
-    public OrdinalCategory(String name, int count, int startValue) {
+    public MonthCategory(String name, int count, int startValue) {
         this(name, count, startValue, 1);
-    }
-
-    public OrdinalCategory(String name, int count) {
-        this(name, count, 1, 1);
     }
 
     // --- SET CATEGORY ---
@@ -75,6 +76,22 @@ public class OrdinalCategory extends NumericalCategory {
     }
 
     @Override
+    public double getValue(int i) {
+        double rawValue = values[i];
+        if (rawValue <= 12) {
+            return rawValue;
+        } else {
+            rawValue %= 12;
+            if (rawValue == 0) rawValue = 12;
+            return rawValue;
+        }
+    }
+
+    public double getRawValue(int i) {
+        return values[i];
+    }
+
+    @Override
     public void setClueTemplate(String template) {
     }
 
@@ -84,7 +101,7 @@ public class OrdinalCategory extends NumericalCategory {
     
     @Override
     protected String rawDisplayValue(int i) {
-        return Utils.numToOrdinalString(values[i]);
+        return Date.nameOfMonth((int)getValue(i));
     }
     
 }

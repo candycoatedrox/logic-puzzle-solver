@@ -56,5 +56,17 @@ public class AllClue extends Clue {
     public int getValue(int i) {
         return values[i][1];
     }
+
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
+    }
     
 }

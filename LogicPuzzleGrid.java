@@ -19,6 +19,7 @@ public class LogicPuzzleGrid {
     protected final int valueCount;
 
     protected final int[][] grid;
+    protected int[][] currentSolution;
 
     // for a CxV puzzle:
     // V*(C-1) total rows
@@ -42,6 +43,13 @@ public class LogicPuzzleGrid {
         for (int i = 0; i < grid.length; i++) {
             subgrid = i / valueCount;
             grid[i] = new int[valueCount*(n - subgrid)];
+        }
+
+        currentSolution = new int[valueCount][categoryCount - 1];
+        for (int i = 0; i < valueCount; i++) {
+            for (int j = 0; j < categoryCount - 1; j++) {
+                currentSolution[i][j] = -1;
+            }
         }
 
         subgridCategories = new int[Utils.additionFactorial(n)][2];
@@ -80,6 +88,14 @@ public class LogicPuzzleGrid {
 
     public int[][] getFullGrid() {
         return grid;
+    }
+
+    public int[][] getCurrentSolution() {
+        return currentSolution;
+    }
+
+    public int[] getCurrentValueSolution(int numericalVal) {
+        return currentSolution[numericalVal];
     }
 
     private int[] getTrueIndices(int catA, int catB) {
@@ -212,6 +228,8 @@ public class LogicPuzzleGrid {
     // --- MARKING ---
 
     public boolean markValue(int mark, int catA, int valA, int catB, int valB) {
+        // return true if square is changed successfully, false otherwise
+
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
         if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
         if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
@@ -243,12 +261,43 @@ public class LogicPuzzleGrid {
         }
     }
 
+    public boolean markValue(int mark, int row, int col) {
+        // return true if square is changed successfully, false otherwise
+
+        if (mark < -1) mark = -1;
+        else if (mark > 1) mark = 1;
+
+        // CHECK BEFORE MARKING
+        // if current value = -2 or -3 (forced false): DO NOT SET
+        // if current value = 0 or -1: 
+            // if setting to 1, double-check there is no other true in row or column
+        // if current value = 1 (true): 
+            // change -3 to -1 and -2 to 0 within subgrid row and column
+        int prevValue = grid[row][col];
+        switch (prevValue) {
+            case 0:
+            case -1:
+                if (mark == 1) {
+                    return setTrue(row, col);
+                } else {
+                    grid[row][col] = mark;
+                    return true;
+                }
+            case 1: return removeTrue(mark, row, col);
+            default: return false;
+        }
+    }
+
     private void setMarkedValueDirectly(int mark, int catA, int valA, int catB, int valB) {
         int[] gridIndices = getGridIndices(catA, valA, catB, valB);
         grid[gridIndices[0]][gridIndices[1]] = mark;
+
+        // TODO: any mark that affects category 0 updates currentSolution
     }
 
     private boolean setTrue(int catA, int valA, int catB, int valB) {
+        // return true if square is changed successfully, false otherwise
+
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
         if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
         if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
@@ -275,9 +324,11 @@ public class LogicPuzzleGrid {
         subgrid[valA][valB] = 1;
         setSubgridDirectly(catA, catB, subgrid);
         return true;
+
+        // TODO: any mark that affects category 0 updates currentSolution
     }
 
-    private boolean setTrue(int mark, int row, int col) {
+    private boolean setTrue(int row, int col) {
         // TODO after other setTrue is done
 
 
@@ -287,7 +338,9 @@ public class LogicPuzzleGrid {
     }
 
     private boolean removeTrue(int newMark, int catA, int valA, int catB, int valB) {
+        // return true if square is changed successfully, false otherwise
         if (newMark == 1) return false;
+
         if (catA == catB) throw new IllegalArgumentException("No subgrid exists between a category and itself");
         if (!isValidCategory(catA) || !isValidCategory(catB)) throw new IndexOutOfBoundsException("Invalid category");
         if (!isValidValue(valA) || !isValidValue(valB)) throw new IndexOutOfBoundsException("Invalid value");
@@ -310,6 +363,8 @@ public class LogicPuzzleGrid {
 
         setSubgridDirectly(catA, catB, subgrid);
         return true;
+
+        // TODO: any mark that affects category 0 updates currentSolution
     }
 
     private boolean removeTrue(int newMark, int row, int col) {
@@ -320,6 +375,21 @@ public class LogicPuzzleGrid {
 
 
         return true;
+    }
+
+    public void reset() {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                grid[i][j] = 0;
+            }
+        }
+
+        currentSolution = new int[valueCount][categoryCount - 1];
+        for (int i = 0; i < valueCount; i++) {
+            for (int j = 0; j < categoryCount - 1; j++) {
+                currentSolution[i][j] = -1;
+            }
+        }
     }
 
     // --- CURSOR ---
@@ -546,6 +616,58 @@ public class LogicPuzzleGrid {
         for (int i = 0; i < valueCount; i++) subgrid[i][c] = column[i];
 
         return changesMade;
+    }
+
+    // --- ERROR CHECKING ---
+
+    public boolean checkForErrors(int[][] solution) {
+        if (solution.length != valueCount) throw new IllegalArgumentException("Provided solution has incorrect number of values");
+        for (int i = 0; i < valueCount; i++) {
+            if (solution[i].length != categoryCount - 1) throw new IllegalArgumentException("Provided solution has incorrect number of categories");
+        }
+
+        // return true if any errors are found, false otherwise
+
+        // TODO
+
+
+
+
+
+        return false;
+    }
+
+    public boolean removeErrors(int[][] solution) {
+        if (solution.length != valueCount) throw new IllegalArgumentException("Provided solution has incorrect number of values");
+        for (int i = 0; i < valueCount; i++) {
+            if (solution[i].length != categoryCount - 1) throw new IllegalArgumentException("Provided solution has incorrect number of categories");
+        }
+
+        // return true if any errors were removed, false otherwise
+
+        // TODO
+
+
+
+
+
+        return false;
+    }
+
+    private int numValueOfValueInSolution(int[][] solution, int cat, int val) {
+        if (solution.length != valueCount) throw new IllegalArgumentException("Provided solution has incorrect number of values");
+        if (cat < 0 || cat >= categoryCount) throw new IndexOutOfBoundsException("Invalid category");
+        if (val < 0 || val >= valueCount) throw new IndexOutOfBoundsException("Invalid value");
+
+        if (cat == 0) return val;
+
+        for (int i = 0; i < solution.length; i++) {
+            if (solution[i].length != categoryCount - 1) throw new IllegalArgumentException("Provided solution has incorrect number of categories");
+            
+            if (solution[i][cat-1] == val) return i;
+        }
+
+        return -1;
     }
 
     // --- MISC ---

@@ -100,4 +100,16 @@ public class SimpleClue extends Clue {
         return valueB[1];
     }
 
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
+    }
+
 }

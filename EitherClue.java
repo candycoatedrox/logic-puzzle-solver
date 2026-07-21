@@ -100,5 +100,17 @@ public class EitherClue extends Clue {
     public int getValueC() {
         return eitherOrB[1];
     }
+
+    // --- RESOLVE ---
+
+    @Override
+    public boolean resolve(LogicPuzzleGrid grid) {
+        // returns true if anything changed, false otherwise
+
+        // TODO
+
+
+        return false;
+    }
     
 }
